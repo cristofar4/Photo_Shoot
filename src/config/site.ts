@@ -3,7 +3,7 @@
  * invented on your behalf.
  */
 export const site = {
-  name: 'Praise Studio',
+  name: 'Aurelle',
   photographer: 'Praise',
   tagline: 'Photographs for a brighter tomorrow.',
 

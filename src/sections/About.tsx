@@ -34,7 +34,7 @@ export function About() {
                 </motion.div>
               </div>
               <div className="absolute -bottom-8 -left-2 grid h-36 w-36 place-items-center rounded-full bg-ivory shadow-xl sm:-left-6">
-                <RotatingText text="Behind the lens · Praise Studio · " size={136} className="text-ink/70" />
+                <RotatingText text="Behind the lens · Aurelle · " size={136} className="text-ink/70" />
                 <span className="grid h-16 w-16 place-items-center rounded-full bg-ember text-white">
                   <Camera width={26} height={26} />
                 </span>
