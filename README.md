@@ -73,7 +73,7 @@ Encode a master clip with `scripts/encode-video.sh media-source/video/my-clip.mp
 | --- | --- |
 | Studio portraits, maroon sweater portrait, rosary black and white, all lifestyle group photos | Your uploads. Credits come from the original watermarks: `@thelightuser`, `@amani_visuals`, `@ghost.thecinematographer` |
 | Hero, film preview and service videos, plus their poster stills | Your three clean clips (photographer, camera rig, night window) |
-| Full film in the “Watch the film” player | Your landscape TikTok clip, credited `@jeremiah.wv`, with its watermark left in place |
+| Full film in the “Watch the film” player | Your edited version of the `@jeremiah.wv` clip (`edited-video.mp4`), credited in the player caption |
 | **Wedding photos and the coastal sunset photo** | **Samples** cropped from the design reference images, because no wedding photos were supplied. Marked `demo: true` |
 | About portrait | A still from the photographer clip. Replace it with a real portrait of Praise |
 | Booking background | `trio-skate-mist`, used as warm light stand in. Swap it for a sunset photograph when you have one |

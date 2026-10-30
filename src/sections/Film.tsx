@@ -67,12 +67,12 @@ export function FilmPlayer({ trigger, onClose }: { trigger: HTMLElement | null |
   const clip = videos.filmFull
   return (
     <Dialog open={trigger !== undefined} onClose={onClose} title="Real people. Lasting stories." variant="cinema" returnTo={trigger}>
-      <div className="relative aspect-video overflow-hidden rounded-[1.5rem] bg-black">
-        {!ready && <img src={imgUrl(clip.poster, 1600)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
+      <div className="relative mx-auto overflow-hidden rounded-[1.5rem] bg-black" style={{ aspectRatio: `${clip.poster.width} / ${clip.poster.height}`, width: `min(100%, calc(75dvh * ${clip.poster.width / clip.poster.height}))` }}>
+        {!ready && <img src={imgUrl(clip.poster, clip.poster.widths.at(-1)!)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
         <video
           className="relative h-full w-full"
           src={clip.src}
-          poster={imgUrl(clip.poster, 1600)}
+          poster={imgUrl(clip.poster, clip.poster.widths.at(-1)!)}
           controls
           autoPlay
           playsInline
@@ -80,7 +80,7 @@ export function FilmPlayer({ trigger, onClose }: { trigger: HTMLElement | null |
           aria-label={clip.label}
         />
       </div>
-      <p className="mt-4 text-sm text-ivory/70">
+      <p className="mt-4 text-center text-sm text-ivory/70">
         {clip.label}
         {clip.credit && <> · Film {clip.credit}</>}. Press Escape to close.
       </p>

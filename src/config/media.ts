@@ -110,7 +110,7 @@ export const photos = {
     alt: 'City lights blurring past a tram window at night', focus: '30% 50%',
   }),
   eyesFilm: photo({
-    file: 'eyes-film-still', width: 1024, height: 576, widths: [480, 960, 1024],
+    file: 'eyes-film-still', width: 776, height: 576, widths: [480, 776],
     alt: 'Extreme close up of eyes lit in warm low light', focus: '50% 50%', credit: '@jeremiah.wv',
   }),
 } satisfies Record<string, Photo>
