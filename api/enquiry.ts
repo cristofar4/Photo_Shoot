@@ -24,6 +24,11 @@ const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice
 
 const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
+/** Lets the form check, at page load, whether email delivery is set up. */
+export function GET(): Response {
+  return json(200, { configured: Boolean(process.env.RESEND_API_KEY && process.env.ENQUIRY_TO_EMAIL) })
+}
+
 export async function POST(request: Request): Promise<Response> {
   const apiKey = process.env.RESEND_API_KEY
   const to = process.env.ENQUIRY_TO_EMAIL

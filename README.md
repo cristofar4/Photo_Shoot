@@ -108,16 +108,17 @@ The project includes a serverless function, `api/enquiry.ts`, that validates eac
 
    | Name | Value |
    | --- | --- |
-   | `VITE_ENQUIRY_ENDPOINT` | `/api/enquiry` |
    | `RESEND_API_KEY` | the key from step 1 |
    | `ENQUIRY_TO_EMAIL` | the inbox that should receive enquiries (comma separate several) |
    | `ENQUIRY_FROM_EMAIL` | optional, for example `Brian Studio <hello@yourdomain.com>` once your domain is verified in Resend |
 
-3. Redeploy (Deployments → ⋯ → Redeploy). `VITE_` values are baked in at build time, so a redeploy is required.
+3. Redeploy (Deployments → ⋯ → Redeploy). Vercel only applies new variables to new deployments.
+
+The form asks `/api/enquiry` on page load whether email is set up, so the demo banner disappears by itself once these variables are live. `VITE_ENQUIRY_ENDPOINT` is not needed on Vercel; set it only to use a different service.
 
 Without a verified domain, Resend's test sender can only deliver to the email address you signed up to Resend with, so use that address for `ENQUIRY_TO_EMAIL` until you verify a domain. If the function is reached but not configured, visitors see a clear error rather than a false success.
 
-Prefer no code? Set `VITE_ENQUIRY_ENDPOINT` to a Formspree, Getform or Basin form URL instead and skip the Resend variables.
+Prefer no code? Set `VITE_ENQUIRY_ENDPOINT` to a Formspree, Getform or Basin form URL instead (then redeploy, since `VITE_` values are fixed at build time) and skip the Resend variables.
 
 ## Other settings
 

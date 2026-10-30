@@ -23,6 +23,27 @@ function validate(f: Fields) {
   return e
 }
 
+/**
+ * Resolves where enquiries go. An explicit VITE_ENQUIRY_ENDPOINT wins;
+ * otherwise the bundled Vercel function is asked whether it is configured.
+ * undefined = still checking, null = demo mode.
+ */
+function useEnquiryEndpoint() {
+  const [endpoint, setEndpoint] = useState<string | null | undefined>(site.enquiryEndpoint || undefined)
+  useEffect(() => {
+    if (site.enquiryEndpoint) return
+    let alive = true
+    fetch('/api/enquiry', { headers: { Accept: 'application/json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => alive && setEndpoint(d?.configured ? '/api/enquiry' : null))
+      .catch(() => alive && setEndpoint(null))
+    return () => {
+      alive = false
+    }
+  }, [])
+  return endpoint
+}
+
 const today = () => {
   const d = new Date()
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
@@ -41,7 +62,9 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
   const nameRef = useRef<HTMLInputElement>(null)
   const honeypot = useRef<HTMLInputElement>(null)
   const sessionRef = useRef<HTMLInputElement>(null)
-  const demo = !site.enquiryEndpoint
+  const endpoint = useEnquiryEndpoint()
+  const demo = endpoint === null
+  const checking = endpoint === undefined
 
   useEffect(() => {
     if (!preset) return
@@ -60,13 +83,13 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
       document.getElementById(`field-${firstError}`)?.focus()
       return
     }
-    if (demo) {
+    if (demo || checking) {
       setStatus({ kind: 'demo' })
       return
     }
     setStatus({ kind: 'sending' })
     try {
-      const res = await fetch(site.enquiryEndpoint, {
+      const res = await fetch(endpoint!, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ ...fields, company: honeypot.current?.value ?? '', source: window.location.href }),
@@ -136,8 +159,8 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
 
             {demo && (
               <p id="demo-note" className="mt-6 rounded-2xl border border-dashed border-ember/50 bg-ember/5 px-4 py-3 text-[0.8rem] leading-relaxed text-ink/80">
-                <strong className="font-semibold text-ember-deep">Demo mode.</strong> No form service is connected yet, so enquiries are not sent. Set{' '}
-                <code className="rounded bg-sand px-1">VITE_ENQUIRY_ENDPOINT</code> to enable delivery.
+                <strong className="font-semibold text-ember-deep">Demo mode.</strong> Email delivery is not set up yet, so enquiries are not sent. Add{' '}
+                <code className="rounded bg-sand px-1">RESEND_API_KEY</code> and <code className="rounded bg-sand px-1">ENQUIRY_TO_EMAIL</code> in Vercel, then redeploy.
               </p>
             )}
 
