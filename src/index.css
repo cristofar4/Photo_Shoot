@@ -6,6 +6,10 @@
   --color-sand: #efe9de;
   --color-ink: #191919;
   --color-ink-soft: #2a2826;
+  --color-espresso: #1f1a16;
+  --color-espresso-soft: #2b2420;
+  --color-clay: #e9dfd1;
+  --color-blush: #f2e6d8;
   --color-ember: #c65313;
   --color-ember-deep: #a9440e;
   --color-line: #ded8ce;
@@ -19,6 +23,7 @@
   --ease-swift: cubic-bezier(0.65, 0, 0.35, 1);
 
   --animate-spin-slow: spin 18s linear infinite;
+  --animate-marquee: marquee 38s linear infinite;
 }
 
 @layer base {
@@ -105,6 +110,12 @@
     background-image:
       radial-gradient(circle at 20% 15%, rgb(255 255 255 / 0.65), transparent 55%),
       radial-gradient(circle at 85% 90%, rgb(222 216 206 / 0.45), transparent 60%);
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
   }
 }
 

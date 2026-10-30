@@ -7,7 +7,8 @@ export function useElementSize<T extends HTMLElement>(): [RefObject<T | null>, {
     const el = ref.current
     if (!el) return
     const update = () => {
-      const r = el.getBoundingClientRect()
+      // Layout size, ignoring CSS transforms (scaled parents must not shrink the shape).
+      const r = { width: el.offsetWidth, height: el.offsetHeight }
       setSize((s) => (Math.abs(s.w - r.width) < 0.5 && Math.abs(s.h - r.height) < 0.5 ? s : { w: r.width, h: r.height }))
     }
     update()

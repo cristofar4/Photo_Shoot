@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { CircleButton } from '../components/Buttons'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { useRef, useState } from 'react'
+import { CircleButton, PillButton } from '../components/Buttons'
 import { Dialog } from '../components/Dialog'
 import { Pause, Play } from '../components/Icons'
 import { NotchedMedia } from '../components/Notched'
-import { Reveal } from '../components/Reveal'
 import { useAmbientVideo } from '../components/VideoFrame'
 import { imgUrl, videos } from '../config/media'
 import { useMediaQuery } from '../lib/hooks'
@@ -11,37 +11,38 @@ import { useMediaQuery } from '../lib/hooks'
 export function Film({ onPlay }: { onPlay: (trigger: HTMLElement | null) => void }) {
   const { video, controls } = useAmbientVideo(videos.film)
   const wide = useMediaQuery('(min-width: 768px)')
-  const notch = wide ? { nw: 168, nh: 168 } : { nw: 116, nh: 116 }
+  const reduce = useReducedMotion()
+  const notch = wide ? { nw: 176, nh: 176 } : { nw: 116, nh: 116 }
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] })
+  const scale = useTransform(scrollYProgress, [0, 1], [0.86, 1])
+  const textY = useTransform(scrollYProgress, [0, 1], [60, 0])
 
   return (
-    <section aria-labelledby="film-title" className="py-10 md:py-16">
-      <div className="shell">
-        <Reveal className="relative">
-          <NotchedMedia corner="br" radius={36} {...notch} outer={28} className="aspect-[4/5] bg-ink sm:aspect-[16/9] lg:aspect-[21/9]">
+    <section aria-labelledby="film-title" className="overflow-hidden py-10 md:py-16">
+      <div className="px-3 sm:px-5">
+        <motion.div ref={ref} className="relative mx-auto max-w-[96rem]" style={reduce ? undefined : { scale }}>
+          <NotchedMedia corner="br" radius={wide ? 44 : 30} {...notch} outer={30} className="aspect-[4/5] bg-espresso sm:aspect-[16/9] lg:aspect-[21/9]">
             {video('absolute inset-0 h-full w-full object-cover')}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/80 via-ink/35 to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-end p-7 sm:justify-center sm:p-12 lg:p-16">
-              <span className="accent-rule mb-6" />
-              <p className="eyebrow mb-4 text-ivory/75">Film</p>
-              <h2 id="film-title" className="display max-w-lg text-[clamp(2.8rem,6.4vw,5.6rem)] text-ivory">
-                Real people. Lasting stories.
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-espresso/85 via-espresso/35 to-transparent" />
+            <motion.div className="absolute inset-0 flex flex-col justify-end p-7 sm:justify-center sm:p-14 lg:p-20" style={reduce ? undefined : { y: textY }}>
+              <p className="eyebrow mb-5 flex items-center gap-3 text-ivory/75">
+                <span className="h-px w-10 bg-ember" /> Film
+              </p>
+              <h2 id="film-title" className="display max-w-2xl text-[clamp(3rem,7.4vw,7rem)] text-ivory">
+                Real people. <span className="italic text-[#f3c9a6]">Lasting stories.</span>
               </h2>
-              <button
-                type="button"
-                onClick={(e) => onPlay(e.currentTarget)}
-                className="group/btn mt-8 hidden items-center gap-4 self-start text-ivory sm:inline-flex"
-              >
-                <span className="grid h-14 w-14 place-items-center rounded-full ring-1 ring-inset ring-ivory/60 transition-all duration-300 group-hover/btn:bg-ivory group-hover/btn:text-ink group-active/btn:scale-90">
-                  <Play className="translate-x-0.5" />
-                </span>
-                <span className="eyebrow">Watch the film</span>
-              </button>
-            </div>
+              <div className="mt-9 hidden sm:block">
+                <PillButton tone="glass" size="lg" onClick={(e) => onPlay(e.currentTarget)}>
+                  Watch the film
+                </PillButton>
+              </div>
+            </motion.div>
             <button
               type="button"
               onClick={controls.togglePlay}
               aria-label={controls.playing ? 'Pause preview' : 'Play preview'}
-              className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full bg-ink/45 text-ivory ring-1 ring-inset ring-white/25 backdrop-blur-md transition hover:bg-ink/70 active:scale-90"
+              className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full bg-espresso/45 text-ivory ring-1 ring-inset ring-white/25 backdrop-blur-md transition hover:bg-espresso/70 active:scale-90"
             >
               {controls.playing ? <Pause width={16} height={16} /> : <Play width={16} height={16} />}
             </button>
@@ -51,10 +52,10 @@ export function Film({ onPlay }: { onPlay: (trigger: HTMLElement | null) => void
               label="Open the film player"
               icon={<Play width={wide ? 30 : 24} height={wide ? 30 : 24} className="translate-x-0.5" />}
               onClick={(e) => onPlay(e.currentTarget)}
-              size={wide ? 104 : 76}
+              size={wide ? 108 : 76}
             />
           </div>
-        </Reveal>
+        </motion.div>
       </div>
     </section>
   )

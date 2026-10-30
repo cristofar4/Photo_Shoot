@@ -20,6 +20,10 @@ export type NotchOptions = {
  * so borders and photographs follow exactly the same curve.
  */
 export function notchPath(w: number, h: number, o: NotchOptions): string {
+  if (o.nw <= 0 || o.nh <= 0) {
+    const r = Math.min(o.radius, w / 2, h / 2)
+    return `M${r} 0 H${w - r} A${r} ${r} 0 0 1 ${w} ${r} V${h - r} A${r} ${r} 0 0 1 ${w - r} ${h} H${r} A${r} ${r} 0 0 1 0 ${h - r} V${r} A${r} ${r} 0 0 1 ${r} 0 Z`
+  }
   const nw = Math.min(o.nw, w - 2)
   const nh = Math.min(o.nh, h - 2)
   const R = Math.max(0, Math.min(o.radius, (w - nw) / 2, (h - nh) / 2))

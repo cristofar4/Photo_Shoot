@@ -1,12 +1,13 @@
 import { motion, useReducedMotion, type HTMLMotionProps } from 'motion/react'
 
-type Props = HTMLMotionProps<'div'> & { delay?: number; y?: number }
+type Props = HTMLMotionProps<'div'> & { delay?: number; y?: number; as?: 'div' | 'li' }
 
 /** Restrained entrance: a short rise and fade, once, when scrolled into view. */
-export function Reveal({ delay = 0, y = 26, children, ...rest }: Props) {
+export function Reveal({ delay = 0, y = 26, children, as = 'div', ...rest }: Props) {
   const reduce = useReducedMotion()
+  const Comp = (as === 'li' ? motion.li : motion.div) as typeof motion.div
   return (
-    <motion.div
+    <Comp
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '0px 0px -12% 0px' }}
@@ -14,7 +15,7 @@ export function Reveal({ delay = 0, y = 26, children, ...rest }: Props) {
       {...rest}
     >
       {children}
-    </motion.div>
+    </Comp>
   )
 }
 

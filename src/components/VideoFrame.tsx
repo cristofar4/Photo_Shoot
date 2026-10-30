@@ -1,4 +1,4 @@
-import { useReducedMotion } from 'motion/react'
+import { useMotionValue, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { imgUrl, type Clip } from '../config/media'
 
@@ -15,6 +15,7 @@ export function useAmbientVideo(clip: Clip) {
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(true)
   const userPaused = useRef(!!reduce)
+  const progress = useMotionValue(0)
 
   useEffect(() => {
     const v = ref.current
@@ -67,11 +68,15 @@ export function useAmbientVideo(clip: Clip) {
         aria-label={clip.label}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        onTimeUpdate={(e) => {
+          const v = e.currentTarget
+          if (v.duration) progress.set(v.currentTime / v.duration)
+        }}
         style={{ objectPosition: clip.poster.focus }}
       />
       {children}
     </>
   )
 
-  return { video, controls }
+  return { video, controls, progress }
 }

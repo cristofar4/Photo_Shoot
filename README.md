@@ -15,6 +15,23 @@ npm run lint
 
 Requires Node 20 or newer.
 
+## Page structure
+
+| Section | Design |
+| --- | --- |
+| Nav | Floating glass pill that tightens on scroll, sliding hover highlight, circular reveal mobile menu |
+| Hero | Full screen cinematic video frame with a sculpted corner holding a rotating scroll badge, glass album index that opens any chapter, video play, mute and progress controls |
+| Intro | Moving ticker, then a manifesto whose words light up as you scroll, with photographs set into the sentence |
+| Gallery | Segmented filter with counts. On desktop, chapter cards stack over one another as you scroll (normal scrolling, no hijacking). Each card has its own design (ivory notched, espresso arched, clay panoramic) plus a fan of prints that open the album at that photo |
+| About | Pinned arched portrait with parallax and a rotating badge beside a scrolling story and numbered benefits |
+| Services | Photographic panels that widen on hover or tap (desktop) or grow taller (phone), with Enquire, details and an album or film button in the curved recess |
+| Film | Frame that grows to full size as it scrolls into view, with a play button in the recess opening an accessible player |
+| Process | Espresso band where the timeline fills and each step lights up as you scroll |
+| Booking | Split layout: photograph panel and a form with session chips |
+| Footer | Espresso card with a call to action, links, a large outline wordmark and a back to top button ringed by scroll progress |
+
+A thin ember reading progress bar runs across the top. On mouse devices an "Open album" bubble follows the cursor over gallery images.
+
 ## Project structure
 
 ```
@@ -24,8 +41,8 @@ src/
     gallery.ts     Album chapters, photo order and captions
     services.ts    Service cards, details and session types
     site.ts        Studio name, contact details, social links, form endpoint
-  sections/        Homepage sections (Nav, Hero, Gallery, About, Services, Film, Process, Booking, Footer)
-  components/      Shared UI: buttons, notched cards, dialog, responsive image
+  sections/        Homepage sections (Nav, Hero, Intro, Gallery, About, Services, Film, Process, Booking, Footer)
+  components/      Shared UI: buttons, notched cards, dialog, responsive image, marquee, cursor bubble
   book/            The page flip album (lazy loaded only when opened)
   lib/             Notch path maths, hooks, scroll lock, focus trap
 media-source/      Original images (yours in photos/, samples in demo/)

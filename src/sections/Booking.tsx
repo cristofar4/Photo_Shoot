@@ -39,7 +39,7 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const errors = validate(fields)
   const nameRef = useRef<HTMLInputElement>(null)
-  const sessionRef = useRef<HTMLSelectElement>(null)
+  const sessionRef = useRef<HTMLInputElement>(null)
   const demo = !site.enquiryEndpoint
 
   useEffect(() => {
@@ -80,154 +80,200 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
   }
 
   return (
-    <section id="contact" aria-labelledby="booking-title" className="relative py-16 md:py-24">
-      <div className="shell">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-ink">
-          <div className="absolute inset-0">
-            <Img photo={sectionMedia.booking} sizes="100vw" className="h-full w-full object-cover opacity-80" />
-            <div className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/55 to-ink/20" />
-          </div>
-
-          <div className="relative grid gap-10 p-6 sm:p-10 lg:grid-cols-[1fr_minmax(0,30rem)] lg:gap-16 lg:p-16">
-            <Reveal className="flex flex-col justify-end pt-24 text-ivory lg:pb-6 lg:pt-40">
-              <span className="accent-rule mb-6" />
-              <p className="eyebrow mb-4 text-ivory/75">Bookings</p>
-              <h2 id="booking-title" className="display text-[clamp(2.8rem,6.4vw,5.6rem)]">
-                Let’s create something timeless.
+    <section id="contact" aria-labelledby="booking-title" className="relative py-24 md:py-32">
+      <div className="shell grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+        {/* Image panel */}
+        <Reveal className="relative min-h-[30rem] overflow-hidden rounded-[2.5rem] bg-espresso text-ivory">
+          <Img photo={sectionMedia.booking} sizes="(min-width: 1024px) 48vw, 100vw" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-espresso via-espresso/40 to-espresso/10" />
+          <div className="relative flex h-full flex-col justify-between gap-16 p-8 sm:p-12">
+            <p className="eyebrow flex w-max items-center gap-3 rounded-full bg-white/10 px-4 py-2 ring-1 ring-inset ring-white/20 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-ember" /> Bookings open
+            </p>
+            <div>
+              <h2 id="booking-title" className="display text-[clamp(3rem,6.4vw,6rem)]">
+                Let’s create <span className="italic text-[#f3c9a6]">something timeless.</span>
               </h2>
               <p className="mt-6 max-w-md text-base leading-relaxed text-ivory/85 md:text-lg">
-                Whether it’s a wedding, a portrait session, or a new story, I’d love to hear your vision and bring it to life through
-                my lens.
+                Whether it’s a wedding, a portrait session, or a new story, I’d love to hear your vision and bring it to life through my lens.
               </p>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <form noValidate onSubmit={submit} className="rounded-[2rem] bg-paper p-6 text-ink shadow-2xl sm:p-9" aria-describedby={demo ? 'demo-note' : undefined}>
-                <h3 className="display text-4xl">Send an enquiry</h3>
-                <p className="mt-2 text-sm text-muted">Tell me a little about your plans and I’ll be in touch soon.</p>
-
-                {demo && (
-                  <p id="demo-note" className="mt-5 rounded-2xl border border-ember/40 bg-ember/5 px-4 py-3 text-[0.8rem] leading-relaxed text-ink/80">
-                    <strong className="font-semibold text-ember-deep">Demo mode.</strong> No form service is connected yet, so enquiries
-                    are not sent. Set <code className="rounded bg-sand px-1">VITE_ENQUIRY_ENDPOINT</code> to enable delivery.
-                  </p>
-                )}
-
-                <div className="mt-6 grid gap-4">
-                  <Field id="name" label="Name" error={show('name')}>
-                    <input
-                      ref={nameRef}
-                      id="field-name"
-                      name="name"
-                      autoComplete="name"
-                      value={fields.name}
-                      onChange={(e) => set('name', e.target.value)}
-                      onBlur={() => setTouched((t) => ({ ...t, name: true }))}
-                      aria-invalid={!!show('name')}
-                      aria-describedby={show('name') ? 'err-name' : undefined}
-                      className={inputCls(!!show('name'))}
-                    />
-                  </Field>
-                  <Field id="email" label="Email" error={show('email')}>
-                    <input
-                      id="field-email"
-                      name="email"
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      value={fields.email}
-                      onChange={(e) => set('email', e.target.value)}
-                      onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                      aria-invalid={!!show('email')}
-                      aria-describedby={show('email') ? 'err-email' : undefined}
-                      className={inputCls(!!show('email'))}
-                    />
-                  </Field>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Field id="session" label="Session type" error={show('session')}>
-                      <select
-                        ref={sessionRef}
-                        id="field-session"
-                        name="session"
-                        value={fields.session}
-                        onChange={(e) => set('session', e.target.value as SessionType)}
-                        onBlur={() => setTouched((t) => ({ ...t, session: true }))}
-                        aria-invalid={!!show('session')}
-                        aria-describedby={show('session') ? 'err-session' : undefined}
-                        className={`${inputCls(!!show('session'))} appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23191919%22 stroke-width=%222%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:14px] bg-[right_1rem_center] bg-no-repeat pr-10`}
-                      >
-                        <option value="">Choose one</option>
-                        {sessionTypes.map((s) => (
-                          <option key={s}>{s}</option>
-                        ))}
-                      </select>
-                    </Field>
-                    <Field id="date" label="Preferred date" hint="Optional" error={show('date')}>
-                      <input
-                        id="field-date"
-                        name="date"
-                        type="date"
-                        min={today()}
-                        value={fields.date}
-                        onChange={(e) => set('date', e.target.value)}
-                        onBlur={() => setTouched((t) => ({ ...t, date: true }))}
-                        aria-invalid={!!show('date')}
-                        aria-describedby={show('date') ? 'err-date' : undefined}
-                        className={inputCls(!!show('date'))}
-                      />
-                    </Field>
-                  </div>
-                  <Field id="message" label="Message" error={show('message')}>
-                    <textarea
-                      id="field-message"
-                      name="message"
-                      rows={4}
-                      value={fields.message}
-                      onChange={(e) => set('message', e.target.value)}
-                      onBlur={() => setTouched((t) => ({ ...t, message: true }))}
-                      aria-invalid={!!show('message')}
-                      aria-describedby={show('message') ? 'err-message' : undefined}
-                      className={`${inputCls(!!show('message'))} h-auto resize-y py-3`}
-                    />
-                  </Field>
-                </div>
-
-                <div className="mt-7 flex flex-wrap items-center gap-4">
-                  <PillButton tone="ink" type="submit" disabled={status.kind === 'sending'} aria-busy={status.kind === 'sending'} className="disabled:opacity-70">
-                    {status.kind === 'sending' ? (
-                      <span className="inline-flex items-center gap-2">
-                        <Spinner width={14} height={14} /> Sending
-                      </span>
-                    ) : (
-                      'Send enquiry'
-                    )}
-                  </PillButton>
-                </div>
-
-                <div aria-live="polite" className="mt-5">
-                  <AnimatePresence mode="wait">
-                    {status.kind === 'sent' && (
-                      <StatusNote key="sent" tone="ok">
-                        <Check width={18} height={18} /> Thank you, your enquiry has been sent. I’ll reply as soon as I can.
-                      </StatusNote>
-                    )}
-                    {status.kind === 'error' && (
-                      <StatusNote key="err" tone="error">
-                        Your enquiry could not be sent. {status.message} Please try again{site.contact.email ? <> or email <a className="underline" href={`mailto:${site.contact.email}`}>{site.contact.email}</a></> : null}.
-                      </StatusNote>
-                    )}
-                    {status.kind === 'demo' && (
-                      <StatusNote key="demo" tone="demo">
-                        Everything looks good, but this form is in demo mode so nothing was sent. Connect a form endpoint to receive
-                        enquiries.
-                      </StatusNote>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </form>
-            </Reveal>
+              {(site.contact.email || site.contact.phone) && (
+                <ul className="mt-8 flex flex-wrap gap-2 text-sm">
+                  {site.contact.email && (
+                    <li>
+                      <a className="rounded-full bg-white/10 px-4 py-2 ring-1 ring-inset ring-white/20 transition hover:bg-ivory hover:text-ink" href={`mailto:${site.contact.email}`}>
+                        {site.contact.email}
+                      </a>
+                    </li>
+                  )}
+                  {site.contact.phone && (
+                    <li>
+                      <a className="rounded-full bg-white/10 px-4 py-2 ring-1 ring-inset ring-white/20 transition hover:bg-ivory hover:text-ink" href={`tel:${site.contact.phone.replace(/\s+/g, '')}`}>
+                        {site.contact.phone}
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              )}
+            </div>
           </div>
-        </div>
+        </Reveal>
+
+        {/* Form panel */}
+        <Reveal delay={0.08}>
+          <form noValidate onSubmit={submit} className="h-full rounded-[2.5rem] border border-line bg-paper p-6 sm:p-10" aria-describedby={demo ? 'demo-note' : undefined}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="display text-[2.6rem]">Send an enquiry</h3>
+                <p className="mt-2 text-sm text-muted">Tell me a little about your plans and I’ll be in touch soon.</p>
+              </div>
+              <span aria-hidden className="hidden h-14 w-14 shrink-0 place-items-center rounded-full bg-ember/10 font-serif text-2xl italic text-ember-deep sm:grid">P</span>
+            </div>
+
+            {demo && (
+              <p id="demo-note" className="mt-6 rounded-2xl border border-dashed border-ember/50 bg-ember/5 px-4 py-3 text-[0.8rem] leading-relaxed text-ink/80">
+                <strong className="font-semibold text-ember-deep">Demo mode.</strong> No form service is connected yet, so enquiries are not sent. Set{' '}
+                <code className="rounded bg-sand px-1">VITE_ENQUIRY_ENDPOINT</code> to enable delivery.
+              </p>
+            )}
+
+            <fieldset className="mt-8">
+              <legend className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink/80">Session type</legend>
+              <div className="flex flex-wrap gap-2" role="radiogroup" aria-invalid={!!show('session')} aria-describedby={show('session') ? 'err-session' : undefined}>
+                {sessionTypes.map((t, i) => {
+                  const checked = fields.session === t
+                  return (
+                    <label
+                      key={t}
+                      className={`relative cursor-pointer select-none rounded-full px-4 py-2.5 text-sm transition-all duration-300 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ember active:scale-95 ${
+                        checked ? 'bg-ink text-ivory shadow-[0_10px_22px_-12px_rgb(25_25_25/0.7)]' : 'bg-clay/60 text-ink/80 hover:bg-clay'
+                      }`}
+                    >
+                      <input
+                        ref={i === 0 ? (sessionRef as never) : undefined}
+                        id={i === 0 ? 'field-session' : undefined}
+                        type="radio"
+                        name="session"
+                        value={t}
+                        checked={checked}
+                        onChange={() => {
+                          set('session', t)
+                          setTouched((x) => ({ ...x, session: true }))
+                        }}
+                        className="sr-only"
+                      />
+                      {checked && <Check width={14} height={14} className="-ml-1 mr-1.5 inline text-ember" />}
+                      {t}
+                    </label>
+                  )
+                })}
+              </div>
+              <FieldError id="session" error={show('session')} />
+            </fieldset>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <Field id="name" label="Name" error={show('name')}>
+                <input
+                  ref={nameRef}
+                  id="field-name"
+                  name="name"
+                  autoComplete="name"
+                  value={fields.name}
+                  onChange={(e) => set('name', e.target.value)}
+                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+                  aria-invalid={!!show('name')}
+                  aria-describedby={show('name') ? 'err-name' : undefined}
+                  className={inputCls(!!show('name'))}
+                />
+              </Field>
+              <Field id="email" label="Email" error={show('email')}>
+                <input
+                  id="field-email"
+                  name="email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={fields.email}
+                  onChange={(e) => set('email', e.target.value)}
+                  onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                  aria-invalid={!!show('email')}
+                  aria-describedby={show('email') ? 'err-email' : undefined}
+                  className={inputCls(!!show('email'))}
+                />
+              </Field>
+            </div>
+            <div className="mt-4">
+              <Field id="date" label="Preferred date" hint="Optional" error={show('date')}>
+                <input
+                  id="field-date"
+                  name="date"
+                  type="date"
+                  min={today()}
+                  value={fields.date}
+                  onChange={(e) => set('date', e.target.value)}
+                  onBlur={() => setTouched((t) => ({ ...t, date: true }))}
+                  aria-invalid={!!show('date')}
+                  aria-describedby={show('date') ? 'err-date' : undefined}
+                  className={inputCls(!!show('date'))}
+                />
+              </Field>
+            </div>
+            <div className="mt-4">
+              <Field id="message" label="Message" error={show('message')}>
+                <textarea
+                  id="field-message"
+                  name="message"
+                  rows={4}
+                  value={fields.message}
+                  onChange={(e) => set('message', e.target.value)}
+                  onBlur={() => setTouched((t) => ({ ...t, message: true }))}
+                  aria-invalid={!!show('message')}
+                  aria-describedby={show('message') ? 'err-message' : undefined}
+                  className={`${inputCls(!!show('message'))} h-auto resize-y py-3`}
+                />
+              </Field>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+              <PillButton tone="ember" size="lg" type="submit" disabled={status.kind === 'sending'} aria-busy={status.kind === 'sending'} className="disabled:opacity-70">
+                {status.kind === 'sending' ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Spinner width={14} height={14} /> Sending
+                  </span>
+                ) : (
+                  'Send enquiry'
+                )}
+              </PillButton>
+              <p className="text-xs text-muted">All fields except the date are required.</p>
+            </div>
+
+            <div aria-live="polite" className="mt-5">
+              <AnimatePresence mode="wait">
+                {status.kind === 'sent' && (
+                  <StatusNote key="sent" tone="ok">
+                    <Check width={18} height={18} /> Thank you, your enquiry has been sent. I’ll reply as soon as I can.
+                  </StatusNote>
+                )}
+                {status.kind === 'error' && (
+                  <StatusNote key="err" tone="error">
+                    Your enquiry could not be sent. {status.message} Please try again
+                    {site.contact.email ? (
+                      <>
+                        {' '}or email <a className="underline" href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+                      </>
+                    ) : null}
+                    .
+                  </StatusNote>
+                )}
+                {status.kind === 'demo' && (
+                  <StatusNote key="demo" tone="demo">
+                    Everything looks good, but this form is in demo mode so nothing was sent. Connect a form endpoint to receive enquiries.
+                  </StatusNote>
+                )}
+              </AnimatePresence>
+            </div>
+          </form>
+        </Reveal>
       </div>
     </section>
   )
@@ -251,20 +297,20 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
         )}
       </label>
       {children}
-      <AnimatePresence>
-        {error && (
-          <motion.p
-            id={`err-${id}`}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mt-1.5 text-[0.8rem] text-ember-deep"
-          >
-            {error}
-          </motion.p>
-        )}
-      </AnimatePresence>
+      <FieldError id={id} error={error} />
     </div>
+  )
+}
+
+function FieldError({ id, error }: { id: string; error?: string }) {
+  return (
+    <AnimatePresence>
+      {error && (
+        <motion.p id={`err-${id}`} initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-1.5 text-[0.8rem] text-ember-deep">
+          {error}
+        </motion.p>
+      )}
+    </AnimatePresence>
   )
 }
 

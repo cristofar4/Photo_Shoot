@@ -1,13 +1,12 @@
-import { motion, useMotionValue, useReducedMotion, useSpring } from 'motion/react'
-import { useRef, useState, type PointerEvent } from 'react'
-import { CircleButton, PillButton, SlidingArrow } from '../components/Buttons'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useId, useState } from 'react'
+import { CircleButton, PillButton } from '../components/Buttons'
 import { Dialog } from '../components/Dialog'
-import { Check, Play } from '../components/Icons'
-import { DemoBadge, Img } from '../components/Img'
-import { site } from '../config/site'
-import { NotchedMedia, NotchedSurface } from '../components/Notched'
+import { Book, Check, Play } from '../components/Icons'
+import { Img } from '../components/Img'
+import { NotchedMedia } from '../components/Notched'
 import { Reveal, SectionHeading } from '../components/Reveal'
-import { sectionMedia, videos } from '../config/media'
+import { sectionMedia } from '../config/media'
 import { services, type Service, type SessionType } from '../config/services'
 import type { OpenGallery } from '../lib/gallery-events'
 import { useFinePointer, useMediaQuery } from '../lib/hooks'
@@ -18,11 +17,13 @@ type Props = {
   onPlayFilm: (trigger: HTMLElement | null) => void
 }
 
-const byId = (id: Service['id']) => services.find((s) => s.id === id)!
-
 export function Services({ onEnquire, onOpenGallery, onPlayFilm }: Props) {
+  const [active, setActive] = useState<Service['id']>('weddings')
   const [detail, setDetail] = useState<{ service: Service; trigger: HTMLElement | null } | null>(null)
-  const open = (service: Service) => (e: { currentTarget: HTMLElement }) => setDetail({ service, trigger: e.currentTarget })
+  const desktop = useMediaQuery('(min-width: 1024px)')
+
+  const primary = (s: Service, el: HTMLElement) =>
+    s.id === 'film' ? onPlayFilm(el) : onOpenGallery({ chapter: s.chapter!, trigger: el, from: el.closest('[data-panel]') as HTMLElement })
 
   return (
     <section id="services" aria-labelledby="services-title" className="py-24 md:py-36">
@@ -31,22 +32,32 @@ export function Services({ onEnquire, onOpenGallery, onPlayFilm }: Props) {
           id="services-title"
           eyebrow="Services"
           title="Made around your story."
-          intro="Thoughtfully crafted photography for the moments that matter."
+          intro="Thoughtfully crafted photography for the moments that matter. Choose a service to see what it includes."
+          aside={
+            <ul className="flex gap-2" aria-hidden>
+              {services.map((s) => (
+                <li key={s.id} className={`h-1.5 rounded-full transition-all duration-700 ease-[var(--ease-lux)] ${active === s.id ? 'w-12 bg-ember' : 'w-4 bg-line'}`} />
+              ))}
+            </ul>
+          }
         />
 
-        <div className="mt-14 flex flex-col gap-6 md:mt-20 md:gap-8">
-          <Reveal>
-            <FeaturedWedding service={byId('weddings')} onExplore={open(byId('weddings'))} />
-          </Reveal>
-          <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-            <Reveal delay={0.05} className="h-full">
-              <PortraitService service={byId('portraits')} onExplore={open(byId('portraits'))} />
-            </Reveal>
-            <Reveal delay={0.12} className="h-full">
-              <FilmService service={byId('film')} onExplore={open(byId('film'))} onPlay={(e) => onPlayFilm(e.currentTarget)} />
-            </Reveal>
+        <Reveal className="mt-14 md:mt-20">
+          <div className={`flex gap-3 ${desktop ? 'h-[min(82vh,44rem)] flex-row' : 'flex-col'}`}>
+            {services.map((s) => (
+              <Panel
+                key={s.id}
+                service={s}
+                active={active === s.id}
+                desktop={desktop}
+                onActivate={() => setActive(s.id)}
+                onEnquire={() => onEnquire(s.session)}
+                onDetails={(el) => setDetail({ service: s, trigger: el })}
+                onPrimary={(el) => primary(s, el)}
+              />
+            ))}
           </div>
-        </div>
+        </Reveal>
       </div>
 
       <Dialog open={!!detail} onClose={() => setDetail(null)} title={detail?.service.title ?? ''} returnTo={detail?.trigger}>
@@ -85,194 +96,161 @@ export function Services({ onEnquire, onOpenGallery, onPlayFilm }: Props) {
   )
 }
 
+/**
+ * One service as a photographic panel. On desktop panels sit side by side and
+ * the chosen one widens; on phones they stack and the chosen one grows taller.
+ */
+function Panel({
+  service,
+  active,
+  desktop,
+  onActivate,
+  onEnquire,
+  onDetails,
+  onPrimary,
+}: {
+  service: Service
+  active: boolean
+  desktop: boolean
+  onActivate: () => void
+  onEnquire: () => void
+  onDetails: (el: HTMLElement) => void
+  onPrimary: (el: HTMLElement) => void
+}) {
+  const fine = useFinePointer()
+  const reduce = useReducedMotion()
+  const id = useId()
+  const photo = sectionMedia.services[service.id]
+  const notch = active ? (desktop ? { nw: 128, nh: 128 } : { nw: 104, nh: 104 }) : { nw: 0, nh: 0 }
+  const primaryLabel = service.id === 'film' ? 'Play the film' : `Open the ${service.eyebrow.toLowerCase()} album`
+
+  return (
+    <div
+      data-panel
+      className="relative min-w-0 transition-[flex-grow,height] duration-[900ms] ease-[var(--ease-lux)]"
+      style={desktop ? { flexGrow: active ? 3.4 : 1, flexBasis: 0, minWidth: '6rem' } : { height: active ? '36rem' : '6.5rem' }}
+      onPointerEnter={() => fine && desktop && onActivate()}
+    >
+      <NotchedMedia corner="br" radius={32} {...notch} outer={active ? 24 : 0} className="h-full w-full bg-espresso">
+        <Img
+          photo={photo}
+          sizes={desktop ? '60vw' : '100vw'}
+          className={`absolute inset-0 h-full w-full object-cover transition-[transform,filter] duration-[1200ms] ease-[var(--ease-lux)] ${active ? 'scale-100 grayscale-0' : 'scale-110 grayscale-[60%]'}`}
+        />
+        <div className={`absolute inset-0 transition-opacity duration-700 ${active ? 'bg-gradient-to-t from-espresso via-espresso/45 to-espresso/5' : 'bg-espresso/65'}`} />
+
+        {/* Collapsed label */}
+        <div className={`absolute inset-0 transition-opacity duration-500 ${active ? 'pointer-events-none opacity-0' : 'opacity-100'}`}>
+          {desktop ? (
+            <div className="flex h-full flex-col items-center justify-between py-8 text-ivory">
+              <span className="eyebrow text-ember">{service.number}</span>
+              <span className="display text-4xl [writing-mode:vertical-rl] rotate-180">{service.eyebrow}</span>
+              <span className="grid h-10 w-10 place-items-center rounded-full ring-1 ring-inset ring-white/30">
+                <span className="h-1.5 w-1.5 rounded-full bg-ember" />
+              </span>
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-between px-6 text-ivory">
+              <span className="flex items-baseline gap-4">
+                <span className="eyebrow text-ember">{service.number}</span>
+                <span className="display text-3xl">{service.eyebrow}</span>
+              </span>
+              <span className="grid h-10 w-10 place-items-center rounded-full ring-1 ring-inset ring-white/30">+</span>
+            </div>
+          )}
+        </div>
+
+        {!active && (
+          <button
+            type="button"
+            onClick={onActivate}
+            aria-expanded={false}
+            aria-controls={id}
+            aria-label={`Show ${service.eyebrow.toLowerCase()} service`}
+            className="absolute inset-0 z-10 rounded-[32px]"
+          />
+        )}
+
+        {/* Expanded content */}
+        <AnimatePresence>
+          {active && (
+            <motion.div
+              id={id}
+              className="absolute inset-0 flex flex-col justify-end p-6 text-ivory sm:p-9 lg:p-12"
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.7, delay: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div style={{ paddingRight: desktop ? notch.nw : 0 }}>
+                <Meta service={service} light />
+                <h3 className="display mt-4 max-w-xl text-[clamp(2.6rem,5.4vw,5.2rem)]">{service.title}</h3>
+                <p className="mt-4 max-w-lg text-base leading-relaxed text-ivory/85 md:text-lg">{service.summary}</p>
+                <div className="mt-6 hidden sm:block">
+                  <Tags tags={service.tags} light />
+                </div>
+                {desktop && (
+                  <ul className="mt-7 grid max-w-xl grid-cols-2 gap-x-8 gap-y-2.5">
+                    {service.includes.map((i) => (
+                      <li key={i} className="flex gap-2.5 text-sm leading-snug text-ivory/80">
+                        <Check width={17} height={17} className="mt-px shrink-0 text-ember" />
+                        {i}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="mt-8 flex flex-wrap gap-3" style={{ paddingRight: desktop ? 0 : notch.nw }}>
+                  <PillButton tone="ember" onClick={onEnquire}>
+                    Enquire
+                  </PillButton>
+                  <PillButton tone="glass" onClick={(e) => onDetails(e.currentTarget)} aria-label={`${service.cta}: full details`}>
+                    {desktop ? service.cta : 'Details'}
+                  </PillButton>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </NotchedMedia>
+
+      {active && (
+        <div className="absolute bottom-0 right-0 z-10 grid place-items-center" style={{ width: notch.nw, height: notch.nh }}>
+          <CircleButton
+            label={primaryLabel}
+            onClick={(e) => onPrimary(e.currentTarget)}
+            size={desktop ? 84 : 68}
+            icon={service.id === 'film' ? <Play width={26} height={26} className="translate-x-0.5" /> : <Book width={26} height={26} />}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Meta({ service, light = false }: { service: Service; light?: boolean }) {
   return (
     <p className={`eyebrow flex items-center gap-3 ${light ? 'text-ivory/70' : 'text-muted'}`}>
-      <span className="text-ember-deep">{service.number}</span>
-      <span aria-hidden className="h-3 w-px bg-line" />
+      <span className={light ? 'text-ember' : 'text-ember-deep'}>{service.number}</span>
+      <span aria-hidden className={`h-3 w-px ${light ? 'bg-white/30' : 'bg-line'}`} />
       {service.eyebrow}
     </p>
   )
 }
 
-function Tags({ tags }: { tags: string[] }) {
+function Tags({ tags, light = false }: { tags: string[]; light?: boolean }) {
   return (
     <ul className="flex flex-wrap gap-2">
       {tags.map((t) => (
-        <li key={t} className="rounded-full bg-sand px-4 py-2 text-[0.8rem] text-ink/80 transition-colors duration-300 hover:bg-ink hover:text-ivory">
+        <li
+          key={t}
+          className={`rounded-full px-4 py-2 text-[0.8rem] transition-colors duration-300 ${
+            light ? 'bg-white/10 text-ivory ring-1 ring-inset ring-white/20 backdrop-blur-md hover:bg-ivory hover:text-ink' : 'bg-sand text-ink/80 hover:bg-ink hover:text-ivory'
+          }`}
+        >
           {t}
         </li>
       ))}
     </ul>
-  )
-}
-
-function FeaturedWedding({ service, onExplore }: { service: Service; onExplore: (e: { currentTarget: HTMLElement }) => void }) {
-  const wide = useMediaQuery('(min-width: 1024px)')
-  const fine = useFinePointer()
-  const reduce = useReducedMotion()
-  const notch = wide ? { nw: 172, nh: 172 } : { nw: 132, nh: 132 }
-
-  // Gentle parallax on the photograph following the pointer.
-  const px = useMotionValue(0)
-  const py = useMotionValue(0)
-  const sx = useSpring(px, { stiffness: 120, damping: 20 })
-  const sy = useSpring(py, { stiffness: 120, damping: 20 })
-  const frame = useRef<HTMLDivElement>(null)
-  const onMove = (e: PointerEvent) => {
-    if (!fine || reduce || !frame.current) return
-    const r = frame.current.getBoundingClientRect()
-    px.set(((e.clientX - r.left) / r.width - 0.5) * -18)
-    py.set(((e.clientY - r.top) / r.height - 0.5) * -18)
-  }
-
-  return (
-    <NotchedSurface
-      corner="br"
-      radius={36}
-      {...notch}
-      outer={26}
-      className="group grid gap-3 p-3 lg:grid-cols-[1.2fr_1fr]"
-      slot={<CircleButton label={`${service.cta}: details`} onClick={onExplore} size={wide ? 84 : 66} ring={wide ? 'Explore weddings · For your forever · ' : undefined} />}
-    >
-      <div
-        ref={frame}
-        onPointerMove={onMove}
-        onPointerLeave={() => {
-          px.set(0)
-          py.set(0)
-        }}
-        className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] bg-sand lg:aspect-auto lg:min-h-[36rem]"
-      >
-        <motion.div className="absolute -inset-4" style={{ x: sx, y: sy }}>
-          <Img photo={sectionMedia.services.weddings} badge={false} sizes="(min-width: 1024px) 55vw, 100vw" className="zoom-media h-full w-full object-cover" />
-        </motion.div>
-        {sectionMedia.services.weddings.demo && site.showDemoBadges && <DemoBadge className="left-5 top-5" />}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/40 to-transparent" />
-        <p className="eyebrow absolute bottom-6 left-6 text-ivory">Featured service</p>
-      </div>
-
-      <div className="flex flex-col px-5 pb-8 pt-8 sm:px-8 lg:px-12 lg:pt-14">
-        <Meta service={service} />
-        <h3 className="display mt-6 text-[clamp(3rem,6vw,5.4rem)]">{service.title}</h3>
-        <p className="mt-6 max-w-md text-base leading-relaxed text-muted md:text-lg">{service.summary}</p>
-        <div className="mt-8">
-          <Tags tags={service.tags} />
-        </div>
-        <ul className="mt-10 grid gap-x-8 gap-y-3 border-t border-line pt-8 sm:grid-cols-2">
-          {service.includes.map((i) => (
-            <li key={i} className="flex gap-3 text-sm leading-snug text-ink/80">
-              <Check width={18} height={18} className="mt-px shrink-0 text-ember" />
-              {i}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-auto flex items-end pt-10" style={{ paddingRight: notch.nw, minHeight: notch.nh + 24 }}>
-          <button type="button" onClick={onExplore} className="group/btn inline-flex items-center gap-3 font-serif text-2xl" tabIndex={-1} aria-hidden>
-            <span className="relative">
-              {service.cta}
-              <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-[0.3] bg-ember transition-transform duration-500 group-hover:scale-x-100" />
-            </span>
-          </button>
-        </div>
-      </div>
-    </NotchedSurface>
-  )
-}
-
-function PortraitService({ service, onExplore }: { service: Service; onExplore: (e: { currentTarget: HTMLElement }) => void }) {
-  return (
-    <article className="group flex h-full flex-col rounded-[2.25rem] border border-line bg-paper p-3">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] rounded-tr-[clamp(6rem,14vw,11rem)] bg-sand">
-        <Img photo={sectionMedia.services.portraits} sizes="(min-width: 768px) 45vw, 100vw" className="zoom-media absolute inset-0 h-full w-full object-cover" />
-      </div>
-      <div className="flex flex-1 flex-col px-5 pb-6 pt-8 sm:px-8">
-        <Meta service={service} />
-        <h3 className="display mt-5 text-[clamp(2.4rem,4.2vw,3.6rem)]">{service.title}</h3>
-        <p className="mt-4 max-w-md text-base leading-relaxed text-muted">{service.summary}</p>
-        <div className="mt-6">
-          <Tags tags={service.tags} />
-        </div>
-        <div className="mt-auto pt-10">
-          <PillButton tone="ink" onClick={onExplore}>
-            {service.cta}
-          </PillButton>
-        </div>
-      </div>
-    </article>
-  )
-}
-
-function FilmService({
-  service,
-  onExplore,
-  onPlay,
-}: {
-  service: Service
-  onExplore: (e: { currentTarget: HTMLElement }) => void
-  onPlay: (e: { currentTarget: HTMLElement }) => void
-}) {
-  const fine = useFinePointer()
-  const reduce = useReducedMotion()
-  const video = useRef<HTMLVideoElement>(null)
-  const [previewing, setPreviewing] = useState(false)
-  const start = () => {
-    if (!fine || reduce || !video.current) return
-    setPreviewing(true)
-    video.current.play().catch(() => setPreviewing(false))
-  }
-  const stop = () => {
-    video.current?.pause()
-    setPreviewing(false)
-  }
-  const clip = videos.filmService
-
-  return (
-    <article className="group h-full" onPointerEnter={start} onPointerLeave={stop}>
-      <div className="flex h-full flex-col rounded-[2.25rem] border border-line bg-paper p-3">
-        <div className="relative">
-          <NotchedMedia corner="br" radius={28} nw={108} nh={108} outer={24} className="aspect-[4/3] bg-ink">
-            <Img photo={sectionMedia.services.film} sizes="(min-width: 768px) 45vw, 100vw" className="zoom-media absolute inset-0 h-full w-full object-cover" />
-            <video
-              ref={video}
-              src={fine ? clip.src : undefined}
-              muted
-              loop
-              playsInline
-              preload="none"
-              aria-hidden
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${previewing ? 'opacity-100' : 'opacity-0'}`}
-            />
-            <p className="eyebrow absolute left-5 top-5 rounded-full bg-ink/50 px-3 py-1.5 text-[0.6rem] text-ivory backdrop-blur">
-              {previewing ? 'Preview playing' : fine ? 'Hover to preview' : 'Tap play to watch'}
-            </p>
-          </NotchedMedia>
-          <div className="absolute bottom-0 right-0 grid h-[108px] w-[108px] place-items-center">
-            <CircleButton label="Play the film" icon={<Play width={24} height={24} className="translate-x-0.5" />} onClick={onPlay} size={76} />
-          </div>
-        </div>
-        <div className="flex flex-1 flex-col px-5 pb-6 pt-8 sm:px-8">
-          <Meta service={service} />
-          <h3 className="display mt-5 text-[clamp(2.4rem,4.2vw,3.6rem)]">{service.title}</h3>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-muted">{service.summary}</p>
-          <div className="mt-6">
-            <Tags tags={service.tags} />
-          </div>
-          <div className="mt-auto flex items-center gap-5 pt-10">
-            <button
-              type="button"
-              onClick={onExplore}
-              className="group/btn inline-flex items-center gap-5 font-serif text-2xl text-ink active:scale-[0.98]"
-            >
-              {service.cta}
-              <span className="grid h-14 w-14 place-items-center rounded-full text-ember-deep ring-1 ring-inset ring-ember/70 transition-colors duration-300 group-hover/btn:bg-ember group-hover/btn:text-white group-focus-visible/btn:bg-ember group-focus-visible/btn:text-white">
-                <SlidingArrow diagonal />
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
   )
 }
 

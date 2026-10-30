@@ -23,50 +23,70 @@ export function SlidingArrow({ diagonal = false, size = 18 }: { diagonal?: boole
   )
 }
 
-type Tone = 'ink' | 'ember' | 'light' | 'outline'
+type Tone = 'ink' | 'ember' | 'light' | 'outline' | 'glass'
 
-const tones: Record<Tone, { base: string; fill: string; dot: string; dotFilled: string }> = {
-  ink: { base: 'bg-ink text-ivory', fill: 'bg-ember', dot: 'bg-ivory text-ink', dotFilled: 'group-hover/btn:bg-ink group-hover/btn:text-ivory' },
-  ember: { base: 'bg-ember text-white', fill: 'bg-ink', dot: 'bg-ink text-ivory', dotFilled: 'group-hover/btn:bg-ember group-hover/btn:text-white' },
-  light: { base: 'bg-ivory text-ink', fill: 'bg-ember', dot: 'bg-ink text-ivory', dotFilled: 'group-hover/btn:bg-ivory group-hover/btn:text-ink' },
-  outline: { base: 'bg-transparent text-ink ring-1 ring-inset ring-ink/25', fill: 'bg-ink', dot: 'bg-ink text-ivory', dotFilled: 'group-hover/btn:bg-ember group-hover/btn:text-white' },
+const tones: Record<Tone, { base: string; fill: string; dot: string; hoverText: string }> = {
+  ink: { base: 'bg-ink text-ivory', fill: 'bg-ember', dot: 'bg-ivory text-ink', hoverText: 'text-white' },
+  ember: { base: 'bg-ember text-white', fill: 'bg-ink', dot: 'bg-white text-ember-deep', hoverText: 'text-white' },
+  light: { base: 'bg-ivory text-ink', fill: 'bg-ember', dot: 'bg-ink text-ivory', hoverText: 'text-white' },
+  outline: { base: 'bg-transparent text-ink ring-1 ring-inset ring-ink/25', fill: 'bg-ink', dot: 'bg-ink text-ivory', hoverText: 'text-ivory' },
+  glass: { base: 'bg-white/10 text-ivory ring-1 ring-inset ring-white/25 backdrop-blur-md', fill: 'bg-ivory', dot: 'bg-ivory text-ink', hoverText: 'text-ink' },
+}
+
+/** Label that rolls up on hover/focus while an identical copy rolls in from below. */
+function RollText({ children, hoverText }: { children: ReactNode; hoverText: string }) {
+  return (
+    <span className="relative block overflow-hidden">
+      <span className="block transition-transform duration-500 ease-[var(--ease-lux)] group-hover/btn:-translate-y-full group-focus-visible/btn:-translate-y-full">
+        {children}
+      </span>
+      <span
+        aria-hidden
+        className={`absolute inset-0 block translate-y-full transition-transform duration-500 ease-[var(--ease-lux)] group-hover/btn:translate-y-0 group-focus-visible/btn:translate-y-0 ${hoverText}`}
+      >
+        {children}
+      </span>
+    </span>
+  )
 }
 
 type PillProps = {
   tone?: Tone
   children: ReactNode
   diagonal?: boolean
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
   href?: string
 } & Omit<ComponentPropsWithoutRef<'button'>, 'children'>
 
 /**
- * Pill button: a colour wash grows out of the arrow dot on hover/focus, the
- * label lifts slightly and the arrow swaps. Pressing gives a soft squeeze,
- * so touch users get the same feedback without hover.
+ * Pill button: the label rolls to a fresh copy, a colour wash grows out of
+ * the arrow dot and the arrow swaps. Pressing gives a soft squeeze so touch
+ * users get the same feedback without hover.
  */
 export const PillButton = forwardRef<HTMLButtonElement & HTMLAnchorElement, PillProps>(function PillButton(
   { tone = 'ink', children, diagonal, size = 'md', href, className = '', ...rest },
   ref,
 ) {
   const t = tones[tone]
-  const pad = size === 'sm' ? 'h-11 pl-5 pr-1.5 text-[0.68rem]' : 'h-[3.25rem] pl-6 pr-2 text-[0.72rem]'
-  const dot = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10'
+  const pad = { sm: 'h-11 pl-5 pr-1.5 text-[0.66rem]', md: 'h-[3.25rem] pl-6 pr-2 text-[0.7rem]', lg: 'h-16 pl-8 pr-2.5 text-[0.78rem]' }[size]
+  const dot = { sm: 'h-8 w-8', md: 'h-10 w-10', lg: 'h-11 w-11' }[size]
   const inner = (
     <>
       <span
-        className={`pointer-events-none absolute right-2 top-1/2 aspect-square w-10 -translate-y-1/2 scale-0 rounded-full transition-transform duration-[650ms] ease-[var(--ease-lux)] group-hover/btn:scale-[9] group-focus-visible/btn:scale-[9] ${t.fill}`}
+        className={`pointer-events-none absolute right-2 top-1/2 aspect-square w-10 -translate-y-1/2 scale-0 rounded-full transition-transform duration-[700ms] ease-[var(--ease-lux)] group-hover/btn:scale-[10] group-focus-visible/btn:scale-[10] ${t.fill}`}
         aria-hidden
       />
-      <span className="relative z-10 whitespace-nowrap font-semibold uppercase tracking-[0.22em] transition-[color,transform] duration-300 group-hover/btn:-translate-y-px group-hover/btn:text-white">
-        {children}
+      <span className="relative z-10 whitespace-nowrap font-semibold uppercase tracking-[0.22em]">
+        <RollText hoverText={t.hoverText}>{children}</RollText>
       </span>
-      <span className={`relative z-10 grid place-items-center rounded-full transition-colors duration-300 ${dot} ${t.dot} ${t.dotFilled}`}>
-        <SlidingArrow diagonal={diagonal} size={size === 'sm' ? 15 : 17} />
+      <span
+        className={`relative z-10 grid place-items-center rounded-full transition-transform duration-500 ease-[var(--ease-lux)] group-hover/btn:rotate-[-45deg] group-hover/btn:scale-110 ${dot} ${t.dot}`}
+      >
+        <SlidingArrow diagonal={diagonal} size={size === 'sm' ? 14 : 16} />
       </span>
     </>
   )
-  const cls = `group/btn relative isolate inline-flex select-none items-center gap-4 overflow-hidden rounded-full ${pad} ${t.base} transition-[transform,box-shadow] duration-300 ease-[var(--ease-lux)] hover:shadow-[0_14px_30px_-14px_rgb(25_25_25/0.55)] active:scale-[0.97] ${className}`
+  const cls = `group/btn relative isolate inline-flex select-none items-center gap-4 overflow-hidden rounded-full ${pad} ${t.base} transition-[transform,box-shadow] duration-300 ease-[var(--ease-lux)] hover:shadow-[0_16px_34px_-16px_rgb(25_25_25/0.6)] active:scale-[0.97] ${className}`
   if (href) {
     return (
       <a ref={ref} href={href} className={cls} onClick={rest.onClick as never} aria-label={rest['aria-label']}>
@@ -157,7 +177,7 @@ export const CircleButton = forwardRef<HTMLButtonElement, CircleProps>(function 
 })
 
 /** Slowly rotating circular caption (static when reduced motion is preferred). */
-export function RotatingText({ text, size }: { text: string; size: number }) {
+export function RotatingText({ text, size, className = 'text-ink/70' }: { text: string; size: number; className?: string }) {
   const id = `ring-${text.replace(/\W+/g, '')}`
   const r = size / 2 - 8
   return (
@@ -166,7 +186,7 @@ export function RotatingText({ text, size }: { text: string; size: number }) {
       viewBox={`0 0 ${size} ${size}`}
       width={size}
       height={size}
-      className="pointer-events-none absolute inset-0 animate-spin-slow text-ink/70"
+      className={`pointer-events-none absolute inset-0 animate-spin-slow ${className}`}
     >
       <defs>
         <path id={id} d={`M ${size / 2} ${size / 2} m -${r} 0 a ${r} ${r} 0 1 1 ${2 * r} 0 a ${r} ${r} 0 1 1 -${2 * r} 0`} />
@@ -175,21 +195,5 @@ export function RotatingText({ text, size }: { text: string; size: number }) {
         <textPath href={`#${id}`}>{text}</textPath>
       </text>
     </svg>
-  )
-}
-
-/** Underlined text link with a growing ember rule and a sliding arrow. */
-export function TextLink({ children, className = '', ...rest }: ComponentPropsWithoutRef<'button'>) {
-  return (
-    <button
-      type="button"
-      className={`group/btn relative inline-flex items-center gap-3 font-serif text-[1.35rem] leading-none text-ink ${className}`}
-      {...rest}
-    >
-      <span className="relative pb-1">
-        {children}
-        <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-[0.35] bg-ember transition-transform duration-500 ease-[var(--ease-lux)] group-hover/btn:scale-x-100 group-focus-visible/btn:scale-x-100" />
-      </span>
-    </button>
   )
 }
