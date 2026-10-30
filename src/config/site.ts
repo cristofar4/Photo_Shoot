@@ -4,7 +4,7 @@
  */
 export const site = {
   name: 'Brian Studio',
-  photographer: 'Praise',
+  photographer: 'Brian',
   tagline: 'Photographs for a brighter tomorrow.',
 
   contact: {

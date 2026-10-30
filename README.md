@@ -75,7 +75,7 @@ Encode a master clip with `scripts/encode-video.sh media-source/video/my-clip.mp
 | Hero, film preview and service videos, plus their poster stills | Your three clean clips (photographer, camera rig, night window) |
 | Full film in the “Watch the film” player | Your edited version of the `@jeremiah.wv` clip (`edited-video.mp4`), credited in the player caption |
 | **Wedding photos and the coastal sunset photo** | **Samples** cropped from the design reference images, because no wedding photos were supplied. Marked `demo: true` |
-| About portrait | A still from the photographer clip. Replace it with a real portrait of Praise |
+| About portrait | A still from the photographer clip. Replace it with a real portrait of Brian |
 | Booking background | `trio-skate-mist`, used as warm light stand in. Swap it for a sunset photograph when you have one |
 
 The vertical TikTok clip (`@tasha_2000xx`) is not used. The supplied photos still contain their burned in watermarks. Replace them with clean exports if you have them.
