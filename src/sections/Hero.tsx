@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useSpring, useTransform } from 'motion/react'
-import { PillButton, RotatingText } from '../components/Buttons'
+import { PillButton } from '../components/Buttons'
 import { ArrowRight, Pause, Play, VolumeOff, VolumeOn } from '../components/Icons'
 import { Img } from '../components/Img'
 import { NotchedMedia } from '../components/Notched'
@@ -18,7 +18,6 @@ export function Hero({ onOpen, onPlayFilm }: { onOpen: OpenGallery; onPlayFilm: 
   const smooth = useSpring(progress, { stiffness: 80, damping: 20 })
   const bar = useTransform(smooth, (v) => `scaleX(${v})`)
   const wide = useMediaQuery('(min-width: 768px)')
-  const notch = wide ? { nw: 172, nh: 172 } : { nw: 118, nh: 118 }
 
   const rise = (delay: number) => ({
     initial: reduce ? false : { opacity: 0, y: 24 },
@@ -34,12 +33,12 @@ export function Hero({ onOpen, onPlayFilm }: { onOpen: OpenGallery; onPlayFilm: 
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.4, ease }}
       >
-        <NotchedMedia corner="br" radius={wide ? 44 : 30} {...notch} outer={wide ? 30 : 22} className="h-full w-full bg-espresso">
+        <NotchedMedia corner="br" radius={wide ? 44 : 30} nw={0} nh={0} className="h-full w-full bg-espresso">
           {video('absolute inset-0 h-full w-full object-cover')}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-espresso via-espresso/30 to-espresso/10" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-espresso/70 via-transparent to-transparent" />
 
-          <div className="absolute inset-0 flex flex-col justify-end px-6 pb-8 sm:px-10 sm:pb-12 lg:px-16 lg:pb-16" style={wide ? { paddingRight: notch.nw + 24 } : { paddingBottom: notch.nh + 8 }}>
+          <div className="absolute inset-0 flex flex-col justify-end px-6 pb-8 sm:px-10 sm:pb-12 lg:px-16 lg:pb-16">
             <motion.p {...rise(0.2)} className="eyebrow mb-6 flex w-max items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-ivory ring-1 ring-inset ring-white/20 backdrop-blur-md">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-70 motion-reduce:animate-none" />
@@ -134,19 +133,6 @@ export function Hero({ onOpen, onPlayFilm }: { onOpen: OpenGallery; onPlayFilm: 
           </motion.nav>
         </NotchedMedia>
 
-        {/* Scroll badge sits in the sculpted corner recess */}
-        <div className="absolute bottom-0 right-0 grid place-items-center" style={{ width: notch.nw, height: notch.nh }}>
-          <a href="#intro" aria-label="Scroll to the introduction" className="group relative grid place-items-center" style={{ width: wide ? 142 : 96, height: wide ? 142 : 96 }}>
-            {wide && <RotatingText text="Scroll to explore · Praise Studio · " size={142} className="text-ink/60" />}
-            <span
-              className="relative grid place-items-center overflow-hidden rounded-full bg-ink text-ivory shadow-[0_18px_34px_-18px_rgb(25_25_25/0.7)] transition-[background-color,transform] duration-300 group-hover:bg-ember group-active:scale-90"
-              style={{ width: wide ? 92 : 72, height: wide ? 92 : 72 }}
-            >
-              <ArrowRight width={24} height={24} className="rotate-90 transition-transform duration-500 ease-[var(--ease-lux)] group-hover:translate-y-[160%]" />
-              <ArrowRight width={24} height={24} className="absolute rotate-90 -translate-y-[160%] transition-transform duration-500 ease-[var(--ease-lux)] group-hover:translate-y-0" />
-            </span>
-          </a>
-        </div>
       </motion.div>
     </section>
   )

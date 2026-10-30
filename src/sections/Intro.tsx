@@ -2,7 +2,6 @@ import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } f
 import { useRef } from 'react'
 import { PillButton } from '../components/Buttons'
 import { Img } from '../components/Img'
-import { Marquee } from '../components/Ambient'
 import { photos, type Photo } from '../config/media'
 import { site } from '../config/site'
 
@@ -23,8 +22,6 @@ export function Intro() {
 
   return (
     <section id="intro" aria-label="Introduction" className="pt-10 md:pt-16">
-      <Marquee items={['Portraits', 'Weddings', 'Lifestyle', 'Film', 'Stories told through light']} className="border-y border-line py-5 text-ink/85" />
-
       <div className="shell py-24 md:py-36">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-3">

@@ -57,27 +57,3 @@ export function CursorBubble() {
     </motion.div>
   )
 }
-
-/** Infinite ticker. Pauses on hover and stops entirely for reduced motion. */
-export function Marquee({ items, className = '' }: { items: string[]; className?: string }) {
-  const row = (hidden: boolean) => (
-    <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
-      {items.map((t, i) => (
-        <li key={`${t}-${i}`} className="flex items-center">
-          <span className="display px-8 text-[clamp(2.2rem,5vw,4.2rem)] italic">{t}</span>
-          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden className="text-ember">
-            <path fill="currentColor" d="M12 0c.8 6.4 5.6 11.2 12 12-6.4.8-11.2 5.6-12 12-.8-6.4-5.6-11.2-12-12C6.4 11.2 11.2 6.4 12 0Z" />
-          </svg>
-        </li>
-      ))}
-    </ul>
-  )
-  return (
-    <div className={`group overflow-hidden ${className}`}>
-      <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
-        {row(false)}
-        {row(true)}
-      </div>
-    </div>
-  )
-}

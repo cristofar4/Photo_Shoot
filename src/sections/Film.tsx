@@ -64,7 +64,7 @@ export function Film({ onPlay }: { onPlay: (trigger: HTMLElement | null) => void
 /** Accessible full player, opened from the film section and the services. */
 export function FilmPlayer({ trigger, onClose }: { trigger: HTMLElement | null | undefined; onClose: () => void }) {
   const [ready, setReady] = useState(false)
-  const clip = videos.film
+  const clip = videos.filmFull
   return (
     <Dialog open={trigger !== undefined} onClose={onClose} title="Real people. Lasting stories." variant="cinema" returnTo={trigger}>
       <div className="relative aspect-video overflow-hidden rounded-[1.5rem] bg-black">
@@ -80,7 +80,10 @@ export function FilmPlayer({ trigger, onClose }: { trigger: HTMLElement | null |
           aria-label={clip.label}
         />
       </div>
-      <p className="mt-4 text-sm text-ivory/70">{clip.label}. Press Escape to close.</p>
+      <p className="mt-4 text-sm text-ivory/70">
+        {clip.label}
+        {clip.credit && <> · Film {clip.credit}</>}. Press Escape to close.
+      </p>
     </Dialog>
   )
 }

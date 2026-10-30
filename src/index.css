@@ -23,7 +23,6 @@
   --ease-swift: cubic-bezier(0.65, 0, 0.35, 1);
 
   --animate-spin-slow: spin 18s linear infinite;
-  --animate-marquee: marquee 38s linear infinite;
 }
 
 @layer base {
@@ -110,12 +109,6 @@
     background-image:
       radial-gradient(circle at 20% 15%, rgb(255 255 255 / 0.65), transparent 55%),
       radial-gradient(circle at 85% 90%, rgb(222 216 206 / 0.45), transparent 60%);
-  }
-}
-
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
   }
 }
 

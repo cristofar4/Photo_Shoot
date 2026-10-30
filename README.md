@@ -20,8 +20,8 @@ Requires Node 20 or newer.
 | Section | Design |
 | --- | --- |
 | Nav | Floating glass pill that tightens on scroll, sliding hover highlight, circular reveal mobile menu |
-| Hero | Full screen cinematic video frame with a sculpted corner holding a rotating scroll badge, glass album index that opens any chapter, video play, mute and progress controls |
-| Intro | Moving ticker, then a manifesto whose words light up as you scroll, with photographs set into the sentence |
+| Hero | Full screen cinematic video frame, glass album index that opens any chapter, video play, mute and progress controls |
+| Intro | A manifesto whose words light up as you scroll, with photographs set into the sentence |
 | Gallery | Segmented filter with counts. On desktop, chapter cards stack over one another as you scroll (normal scrolling, no hijacking). Each card has its own design (ivory notched, espresso arched, clay panoramic) plus a fan of prints that open the album at that photo |
 | About | Pinned arched portrait with parallax and a rotating badge beside a scrolling story and numbered benefits |
 | Services | Photographic panels that widen on hover or tap (desktop) or grow taller (phone), with Enquire, details and an album or film button in the curved recess |
@@ -42,7 +42,7 @@ src/
     services.ts    Service cards, details and session types
     site.ts        Studio name, contact details, social links, form endpoint
   sections/        Homepage sections (Nav, Hero, Intro, Gallery, About, Services, Film, Process, Booking, Footer)
-  components/      Shared UI: buttons, notched cards, dialog, responsive image, marquee, cursor bubble
+  components/      Shared UI: buttons, notched cards, dialog, responsive image, cursor bubble
   book/            The page flip album (lazy loaded only when opened)
   lib/             Notch path maths, hooks, scroll lock, focus trap
 media-source/      Original images (yours in photos/, samples in demo/)
@@ -72,12 +72,13 @@ Encode a master clip with `scripts/encode-video.sh media-source/video/my-clip.mp
 | Media | Source |
 | --- | --- |
 | Studio portraits, maroon sweater portrait, rosary black and white, all lifestyle group photos | Your uploads. Credits come from the original watermarks: `@thelightuser`, `@amani_visuals`, `@ghost.thecinematographer` |
-| Hero, film and service videos, plus their poster stills | Your three clean clips (photographer, camera rig, night window) |
+| Hero, film preview and service videos, plus their poster stills | Your three clean clips (photographer, camera rig, night window) |
+| Full film in the “Watch the film” player | Your landscape TikTok clip, credited `@jeremiah.wv`, with its watermark left in place |
 | **Wedding photos and the coastal sunset photo** | **Samples** cropped from the design reference images, because no wedding photos were supplied. Marked `demo: true` |
 | About portrait | A still from the photographer clip. Replace it with a real portrait of Praise |
 | Booking background | `trio-skate-mist`, used as warm light stand in. Swap it for a sunset photograph when you have one |
 
-Two of the uploaded clips carried TikTok overlays and are not used. The supplied photos still contain their burned in watermarks. Replace them with clean exports if you have them.
+The vertical TikTok clip (`@tasha_2000xx`) is not used. The supplied photos still contain their burned in watermarks. Replace them with clean exports if you have them.
 
 ## The book gallery
 

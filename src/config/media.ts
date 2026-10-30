@@ -109,17 +109,23 @@ export const photos = {
     file: 'night-window-still', width: 2580, height: 1440, widths: [480, 960, 1600],
     alt: 'City lights blurring past a tram window at night', focus: '30% 50%',
   }),
+  eyesFilm: photo({
+    file: 'eyes-film-still', width: 1024, height: 576, widths: [480, 960, 1024],
+    alt: 'Extreme close up of eyes lit in warm low light', focus: '50% 50%', credit: '@jeremiah.wv',
+  }),
 } satisfies Record<string, Photo>
 
 export type PhotoKey = keyof typeof photos
 
-export type Clip = { src: string; poster: Photo; label: string }
+export type Clip = { src: string; poster: Photo; label: string; credit?: string }
 
 export const videos = {
   /** Hero loop beside “Moments worth keeping.” */
   hero: { src: '/media/video/photographer.mp4', poster: photos.photographer, label: 'A photographer framing a portrait' },
   /** Film section preview and full player. */
   film: { src: '/media/video/camera-rig.mp4', poster: photos.cameraRig, label: 'Behind the scenes with the cinema camera' },
+  /** Full film opened by every “Watch the film” button (has sound). */
+  filmFull: { src: '/media/video/eyes-film.mp4', poster: photos.eyesFilm, label: 'A short film in close up', credit: '@jeremiah.wv' },
   /** Service card preview for Film. */
   filmService: { src: '/media/video/night-window.mp4', poster: photos.nightWindow, label: 'City lights through a tram window at night' },
 } satisfies Record<string, Clip>
