@@ -35,7 +35,7 @@ export function Gallery({ onOpen }: { onOpen: OpenGallery }) {
           intro="Explore the people, places and feelings that make life extraordinary. Open any collection to flip through it like a book."
           aside={
             <LayoutGroup id="filters">
-              <div role="group" aria-label="Filter collections" className="flex flex-wrap gap-1 rounded-full bg-clay/70 p-1.5">
+              <div role="group" aria-label="Filter collections" className="flex w-full flex-nowrap gap-0.5 overflow-x-auto rounded-full bg-clay/70 p-1 [scrollbar-width:none] sm:w-auto sm:gap-1 sm:p-1.5">
                 {filters.map((f) => {
                   const active = filter === f.id
                   return (
@@ -44,7 +44,7 @@ export function Gallery({ onOpen }: { onOpen: OpenGallery }) {
                       type="button"
                       aria-pressed={active}
                       onClick={() => setFilter(f.id)}
-                      className={`relative flex h-11 items-center gap-2 rounded-full px-5 font-serif text-lg transition-colors duration-300 active:scale-95 ${active ? 'text-ivory' : 'text-ink/75 hover:text-ink'}`}
+                      className={`relative flex h-11 flex-1 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full px-2.5 font-serif text-base transition-colors duration-300 active:scale-95 sm:flex-none sm:gap-2 sm:px-5 sm:text-lg ${active ? 'text-ivory' : 'text-ink/75 hover:text-ink'}`}
                     >
                       {active && (
                         <motion.span
@@ -54,7 +54,7 @@ export function Gallery({ onOpen }: { onOpen: OpenGallery }) {
                         />
                       )}
                       <span className="relative">{f.label}</span>
-                      <span className={`relative font-sans text-[0.62rem] font-semibold ${active ? 'text-ember' : 'text-muted'}`}>{f.count}</span>
+                      <span className={`relative -mt-2 self-start pt-2.5 font-sans text-[0.55rem] font-semibold sm:mt-0 sm:self-auto sm:pt-0 sm:text-[0.62rem] ${active ? 'text-ember' : 'text-muted'}`}>{f.count}</span>
                     </button>
                   )
                 })}
