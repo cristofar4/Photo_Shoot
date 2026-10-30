@@ -39,6 +39,7 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const errors = validate(fields)
   const nameRef = useRef<HTMLInputElement>(null)
+  const honeypot = useRef<HTMLInputElement>(null)
   const sessionRef = useRef<HTMLInputElement>(null)
   const demo = !site.enquiryEndpoint
 
@@ -68,9 +69,12 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
       const res = await fetch(site.enquiryEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ ...fields, source: window.location.href }),
+        body: JSON.stringify({ ...fields, company: honeypot.current?.value ?? '', source: window.location.href }),
       })
-      if (!res.ok) throw new Error(`The server responded with ${res.status}.`)
+      if (!res.ok) {
+        const detail = await res.json().catch(() => null)
+        throw new Error(detail?.error ?? `The server responded with ${res.status}.`)
+      }
       setStatus({ kind: 'sent' })
       setFields(empty)
       setTouched({})
@@ -121,7 +125,7 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
 
         {/* Form panel */}
         <Reveal delay={0.08}>
-          <form noValidate onSubmit={submit} className="h-full rounded-[2.5rem] border border-line bg-paper p-6 sm:p-10" aria-describedby={demo ? 'demo-note' : undefined}>
+          <form noValidate onSubmit={submit} className="relative h-full rounded-[2.5rem] border border-line bg-paper p-6 sm:p-10" aria-describedby={demo ? 'demo-note' : undefined}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="display text-[2.6rem]">Send an enquiry</h3>
@@ -136,6 +140,14 @@ export function Booking({ preset, presetKey }: { preset: SessionType | null; pre
                 <code className="rounded bg-sand px-1">VITE_ENQUIRY_ENDPOINT</code> to enable delivery.
               </p>
             )}
+
+            {/* Spam trap: hidden from people, often filled in by bots. */}
+            <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <label>
+                Company
+                <input ref={honeypot} type="text" name="company" tabIndex={-1} autoComplete="off" />
+              </label>
+            </div>
 
             <fieldset className="mt-8">
               <legend className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink/80">Session type</legend>

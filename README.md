@@ -99,13 +99,33 @@ The vertical TikTok clip (`@tasha_2000xx`) is not used. The supplied photos stil
 - With `prefers-reduced-motion`, or if 3D transforms are unsupported, pages change instantly with a short fade and the album simply fades out. The book stays fully usable.
 - The album code is a separate bundle loaded on first open, and preloaded when the pointer enters the gallery.
 
-## Integrations that still need configuring
+## Connecting the enquiry form (Vercel + Resend)
+
+The project includes a serverless function, `api/enquiry.ts`, that validates each enquiry and emails it to you through [Resend](https://resend.com). The visitor's address is set as reply to, so you can answer straight from your inbox. A hidden honeypot field quietly drops most spam bots.
+
+1. Create a free account at resend.com and copy an **API key**.
+2. In Vercel, open the project, then **Settings → Environment Variables**, and add:
+
+   | Name | Value |
+   | --- | --- |
+   | `VITE_ENQUIRY_ENDPOINT` | `/api/enquiry` |
+   | `RESEND_API_KEY` | the key from step 1 |
+   | `ENQUIRY_TO_EMAIL` | the inbox that should receive enquiries (comma separate several) |
+   | `ENQUIRY_FROM_EMAIL` | optional, for example `Brian Studio <hello@yourdomain.com>` once your domain is verified in Resend |
+
+3. Redeploy (Deployments → ⋯ → Redeploy). `VITE_` values are baked in at build time, so a redeploy is required.
+
+Without a verified domain, Resend's test sender can only deliver to the email address you signed up to Resend with, so use that address for `ENQUIRY_TO_EMAIL` until you verify a domain. If the function is reached but not configured, visitors see a clear error rather than a false success.
+
+Prefer no code? Set `VITE_ENQUIRY_ENDPOINT` to a Formspree, Getform or Basin form URL instead and skip the Resend variables.
+
+## Other settings
 
 Copy `.env.example` to `.env.local`, or set these in your host's environment settings:
 
 | Variable | Purpose |
 | --- | --- |
-| `VITE_ENQUIRY_ENDPOINT` | URL the enquiry form POSTs JSON to: name, email, session, date, message, source. Works with Formspree, Getform, Basin or your own function. **Without it the form runs in labelled demo mode and sends nothing.** A success message appears only when the endpoint returns a 2xx response. |
+| `VITE_ENQUIRY_ENDPOINT` | Where the form POSTs JSON (see above). **Without it the form runs in labelled demo mode and sends nothing.** A success message appears only when the endpoint returns a 2xx response. |
 | `VITE_CONTACT_EMAIL`, `VITE_CONTACT_PHONE`, `VITE_CONTACT_LOCATION` | Shown in the footer and the form's error message. Hidden when empty. |
 | `VITE_INSTAGRAM_URL`, `VITE_TIKTOK_URL` | Footer social links. Hidden when empty. |
 

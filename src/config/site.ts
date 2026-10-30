@@ -19,8 +19,9 @@ export const site = {
   ],
 
   /**
-   * Where the enquiry form POSTs JSON. Works with Formspree, Getform, Basin,
-   * a serverless function, or your own API. Empty means demo mode.
+   * Where the enquiry form POSTs JSON. On Vercel set it to `/api/enquiry`
+   * (the function in api/enquiry.ts). Formspree, Getform, Basin or your own
+   * API also work. Empty means demo mode.
    */
   enquiryEndpoint: import.meta.env.VITE_ENQUIRY_ENDPOINT ?? '',
 
