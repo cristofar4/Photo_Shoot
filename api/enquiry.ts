@@ -83,8 +83,17 @@ export async function POST(request: Request): Promise<Response> {
   })
 
   if (!res.ok) {
-    console.error('Resend error', res.status, await res.text().catch(() => ''))
-    return json(502, { error: 'The email service did not accept the enquiry.' })
+    const raw = await res.text().catch(() => '')
+    console.error('Resend error', res.status, raw)
+    // Resend's short error name (for example validation_error) helps the
+    // studio diagnose setup without exposing addresses or keys to visitors.
+    let code = ''
+    try {
+      code = String((JSON.parse(raw) as { name?: string }).name ?? '').replace(/[^\w]/g, '').slice(0, 40)
+    } catch {
+      /* not JSON */
+    }
+    return json(502, { error: `The email service did not accept the enquiry${code ? ` (${code}, ${res.status})` : ` (${res.status})`}.` })
   }
   return json(200, { ok: true })
 }
