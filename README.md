@@ -1,4 +1,4 @@
-# Aurelle
+# Brian Studio
 
 A responsive photography site for portraits, weddings and film, built with React, TypeScript, Tailwind CSS v4 and Motion.
 The signature feature is a page turning photo album that opens out of the gallery cards and folds into a bird that flies away when closed.
